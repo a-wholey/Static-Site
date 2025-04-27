@@ -44,5 +44,43 @@ class TestHTMLNode(unittest.TestCase):
             node = LeafNode("p", None)
             node.to_html()
 
+    def test_parent_with_child(self):
+        child_node = LeafNode("span", "child")
+        parent_node = ParentNode("div", [child_node])
+        self.assertEqual(parent_node.to_html(), "<div><span>child</span></div>")
+    
+    def test_parent_with_grandchildren(self):
+        grandchild_node = LeafNode("b", "grandchild")
+        child_node = ParentNode("span", [grandchild_node])
+        parent_node = ParentNode("div", [child_node])
+        self.assertEqual(
+            parent_node.to_html(),
+            "<div><span><b>grandchild</b></span></div>",
+        )
+
+    def test_parent_with_multiple_children(self):
+        child_node = LeafNode("b", "Bold text")
+        other_child = LeafNode(None, "Normal text")
+        other_node = LeafNode("i", "Italic text")
+        parent_node = ParentNode("p", [child_node, other_child, other_node])
+
+        self.assertEqual(
+            parent_node.to_html(), 
+            "<p><b>Bold text</b>Normal text<i>Italic text</i></p>"
+        )
+    def test_to_html_with_nested_children_and_props(self):
+        inner_child = LeafNode("em", "emphasized", {"class": "highlight"})
+        middle_child = ParentNode("span", [inner_child], {"id": "middle"})
+        outer_parent = ParentNode("div", [
+            LeafNode("p", "First paragraph"),
+            middle_child,
+            LeafNode("p", "Last paragraph")
+        ], {"class": "container"})
+
+        self.assertEqual(
+            outer_parent.to_html(),
+            '<div class="container"><p>First paragraph</p><span id="middle"><em class="highlight">emphasized</em></span><p>Last paragraph</p></div>'
+        )
+
 if __name__ == "__main__":
     unittest.main()
