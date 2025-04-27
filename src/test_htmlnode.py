@@ -81,6 +81,45 @@ class TestHTMLNode(unittest.TestCase):
             outer_parent.to_html(),
             '<div class="container"><p>First paragraph</p><span id="middle"><em class="highlight">emphasized</em></span><p>Last paragraph</p></div>'
         )
+    
+    def test_text(self):
+        node = TextNode("This is a text node", TextType.NORMAL)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, None)
+        self.assertEqual(html_node.value, "This is a text node")
+    
+    def test_bold(self):
+        node = TextNode("This is a bold node", TextType.BOLD)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "b")
+        self.assertEqual(html_node.value, "This is a bold node")
+    
+    def test_italic(self):
+        node = TextNode("This is an italic node", TextType.ITALIC)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "i")
+        self.assertEqual(html_node.value, "This is an italic node")
+    
+    def test_code(self):
+        node = TextNode("This is a code node", TextType.CODE)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "code")
+        self.assertEqual(html_node.value, "This is a code node")
+    
+    def test_link(self):
+        node = TextNode("Link Text", TextType.LINK, "https://www.dogs.com")
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "a")
+        self.assertEqual(html_node.value, "Link Text")
+        self.assertEqual(html_node.props["href"], "https://www.dogs.com")
+
+    def test_img(self):
+        node = TextNode("Image Text", TextType.IMAGE, "https://example.com/image.jpg")
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "img")
+        self.assertEqual(html_node.value, "")
+        self.assertEqual(html_node.props["src"], "https://example.com/image.jpg")
+        self.assertEqual(html_node.props["alt"], "Image Text")
 
 if __name__ == "__main__":
     unittest.main()
